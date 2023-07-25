@@ -1,0 +1,24 @@
+name: terraform workflows
+
+on:
+  push:
+    branches:
+      - feature/**
+      - hotfix/**
+
+  pull_request:
+    branches:
+      - dev
+      - master
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  Scan:
+    if: ${{ github.event_name == 'push' }}
+    uses: TODO/workflows/.github/workflows/tf-scan.yml@main
+
+  Lint:
+    if: ${{ github.event_name == 'push' }}
+    uses: TODO/workflows/.github/workflows/tf-lint.yml@main
