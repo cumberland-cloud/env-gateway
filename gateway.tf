@@ -1,5 +1,9 @@
+resource "aws_api_gateway_account" "demo" {
+  cloudwatch_role_arn       = module.iam.service_roles["api_gateway"].arn
+}
+
 resource "aws_api_gateway_rest_api" "this" {
-    name                    = "cumberland-cloud-gateway"
+    name                    = "${local.namespace.root}-gateway"
 }
 
 resource "aws_api_gateway_resource" "root" {

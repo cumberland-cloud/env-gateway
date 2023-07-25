@@ -1,25 +1,34 @@
-# TODO: use git sources and lock with version refs.
-
 module "iam" {
-    source              = "../modules/iam"
+    source              = "git::https://github.com/cumberland-cloud/modules-iam.git"
+
+    namespace           = local.namespaces.root
 }
 
 module "kms" {
-  source                = "../modules/kms"
+  source                = "https://github.com/cumberland-cloud/modules-kms.git"
 
   key                   = {
-    alias               = local.namespace
+    alias               = local.namespaces.root
   }
 }
 
 module "cognito" {
-    source              = "../modules/cognito"
+    source              = "git::https://github.com/cumberland-cloud/modules-cognito.git"
+
+    cognito             = {
+        user_pool_name  = local.namespaces.root
+        access_group    = {
+            name        = local.tenant_access_group_name
+            role_arn    = module.iam.tenant_role.arn
+        }
+    }
+    domain              = local.domain
 }
 
 module "ecr" {
     depends_on          = [ module.kms ]
     for_each            = local.ecrs
-    source              = "../modules/ecr"
+    source              = "git::https://github.com/cumberland-cloud/modules-ecr.git"
 
     repository          = {
         kms_key_arn     = module.kms.key.arn
@@ -31,12 +40,13 @@ module "ecr" {
 
 module "lambda" {
     depends_on          = [ 
+        module.cognito,
         module.ecr, 
         module.kms,
         module.iam 
     ]
     for_each            = local.endpoints
-    source              = "../modules/lambda"
+    source              = "git::https://github.com/cumberland-cloud/modules-lambda.git"
 
     lambda              = {
         function_name   = each.value.path

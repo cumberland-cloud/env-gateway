@@ -3,6 +3,7 @@ locals {
     domain                                  = "cumberland-cloud.com"
     lambda_prefix                           = "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.acocunt_id}:function"
     metadata_keys                           = [ "ecrs", "root" ]
+    tenant_access_group_name                = "${local.namespace.root}-tenant-access"
     # master configuration
     #   NOTES:
     #       1. The image specifed in an endpoint configuration must be defined in the `ecrs` property
@@ -81,10 +82,10 @@ locals {
                     method                  = "GET"
                     environment             = {
                         ACCOUNT_ID          = data.aws_caller_identity.current.account_id
-                        API_ID              = "TODO"
-                        CLIENT_ID           = "TODO"
+                        API_ID              = aws_api_gateway_rest_api.this.id
+                        CLIENT_ID           = module.cognito.user_pool.client_id
                         GROUP               = "TODO"
-                        USERPOOL_ID         = "TODO"
+                        USERPOOL_ID         = module.cognito.user_pool.id
                         REGION              = data.aws_region.current.name
                     }
                 },{
