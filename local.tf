@@ -24,22 +24,45 @@ locals {
                     authorization           = "TODO"
                     image                   = "get-sale"
                     method                  = "GET"
-                    environment             = { }
+                    environment             = { 
+                        TENANT              = "cafe-mark"
+                    }
                 },{
                     authorization           = "NONE"
                     image                   = "get-inventory"
                     method                  = "GET"
-                    environment             = { }
+                    environment             = { 
+                        TENANT              = "cafe-mark"
+                    }
                 },{
                     authorization           = "TODO"
                     image                   = "post-sale"
                     method                  = "POST"
-                    environment             = { }
+                    environment             = { 
+                        TENANT              = "cafe-mark"
+                    }
+                    request_model           = {
+                        type                = "object"
+                        required            = [ "tenant_id", "inventory_id", "quantity"]
+                        properties          = {
+                            inventory_id    = {
+                                type        = "integer"
+                            }
+                            tenant_id       = {
+                                type        = "string"
+                            }
+                            quantity        = {
+                                type        = "integer"
+                            }
+                        }
+                    }
                 },{
                     authorization           = "TODO"
                     image                   = "post-inventory"
                     method                  = "POST"
-                    environment             = { }
+                    environment             = { 
+                        TENANT              = "cafe-mark"
+                    }
                 }]
             }
             sunshine_daze                   = {
@@ -48,22 +71,45 @@ locals {
                     authorization           = "TODO"
                     image                   = "get-sale"
                     method                  = "GET"
-                    environment             = { }
+                    environment             = { 
+                        TENANT              = "sunshine-daze"
+                    }
                 },{
                     authorization           = "NONE"
                     image                   = "get-inventory"
                     method                  = "GET"
-                    environment             = { }
+                    environment             = {
+                        TENANT              = "sunshine-daze"
+                     }
                 },{
                     authorization           = "TODO"
                     image                   = "post-sale"
                     method                  = "POST"
-                    environment             = { }
+                    environment             = {
+                        TENANT              = "sunshine-daze"
+                    }
+                    request_model           = {
+                        type                = "object"
+                        required            = [ "tenant_id", "inventory_id", "quantity"]
+                        properties          = {
+                            inventory_id    = {
+                                type        = "integer"
+                            }
+                            tenant_id       = {
+                                type        = "string"
+                            }
+                            quantity        = {
+                                type        = "integer"
+                            }
+                        }
+                    }
                 },{
                     authorization           = "TODO"
                     image                   = "post-inventory"
                     method                  = "POST"
-                    environment             = { }
+                    environment             = { 
+                        TENANT              = "sunshine-daze"
+                    }
                 }]
             }
         }
