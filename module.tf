@@ -5,7 +5,7 @@ module "iam" {
 }
 
 module "kms" {
-  source                = "https://github.com/cumberland-cloud/modules-kms.git?ref=master"
+  source                = "https://github.com/cumberland-cloud/modules-kms.git?ref=v1.0.0"
 
   key                   = {
     alias               = local.namespaces.root
