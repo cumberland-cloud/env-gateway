@@ -5,20 +5,17 @@ on:
     branches:
       - feature/**
       - hotfix/**
-
   pull_request:
     branches:
       - dev
       - master
       - main
-
   workflow_dispatch:
 
 jobs:
   Scan:
     if: ${{ github.event_name == 'push' }}
     uses: cumberland-cloud/workflows/.github/workflows/tf-scan.yaml@main
-
   Lint:
     if: ${{ github.event_name == 'push' }}
     uses: cumberland-cloud/workflows/.github/workflows/tf-lint.yaml@main
