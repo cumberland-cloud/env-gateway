@@ -16,3 +16,8 @@ jobs:
   Lint:
     if: ${{ github.event_name == 'push' }}
     uses: cumberland-cloud/workflows/.github/workflows/tf-lint.yaml@master
+  Docs:
+    if: ${{ github.event_name == 'pull_request' }}
+    uses: cumberland-cloud/workflows/.github/workflows/gh-pages.yaml@master
+    with:
+      TFDOCS: true
