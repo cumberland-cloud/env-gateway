@@ -2,11 +2,15 @@ data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
 
-data "aws_acm_certificate" "issued" {
+data "aws_acm_certificate" "domain" {
   domain                        = "*.${local.domain}"
   statuses                      = [ "ISSUED" ]
 }
 
+data "aws_route53_zone" "domain" {
+  name                          = "${local.domain}"
+  private_zone                  = false
+}
 
 data "aws_iam_policy_document" "ecr_access" {
     for_each                    = local.ecr_endpoint_access

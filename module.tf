@@ -34,7 +34,7 @@ module "ecr" {
         kms_key_arn     = module.kms.key.arn
         name            = each.value.name
         namespace       = "${local.namespaces.root}/${each.value.namespace}"
-        policy          = data.aws_iam_policy_document.lambda_ecr_access[each.key].json
+        policy          = data.aws_iam_policy_document.ecr_access[each.key].json
     }
 }
 
