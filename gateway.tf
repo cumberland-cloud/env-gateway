@@ -25,7 +25,7 @@ resource "aws_api_gateway_resource" "root" {
 resource "aws_api_gateway_resource" "tenants" {
     for_each                    = { 
         for k,v in local.namespaces.tenant:
-            k                   => v if !contains(local.metadata_keys, key)                        
+            k                   => v if !contains(local.metadata_keys, k)                        
     }
 
     parent_id                   = each.parent_id
@@ -36,7 +36,7 @@ resource "aws_api_gateway_resource" "tenants" {
 resource "aws_api_gateway_resource" "system" {
     for_each                    = { 
         for k,v in local.namespaces.system:
-            k                   => v if !contains(local.metadata_keys, key)                        
+            k                   => v if !contains(local.metadata_keys, k)                        
     }
 
     parent_id                   = each.parent_id
