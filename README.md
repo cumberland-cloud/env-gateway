@@ -1,8 +1,8 @@
-# Terraform Modules: KMS
+# Environment: Gateway
 
-A Terraform module for deploying a KMS key and policy.
+A Terraform project for deploying the infrastructure that supports the [Cumberland Cloud Gateway]().
 
-Refer to [hosted docs]() for more information regarding this module.
+Refer to [hosted docs]() for more information regarding this project.
 
 ## Quickstart
 
@@ -10,4 +10,12 @@ Refer to [hosted docs]() for more information regarding this module.
 terraform init -upgrade
 terraform plan 
 terraform apply
+```
+
+### Build the Docs
+
+```shell
+cd docs
+pip install -r requirements.txt
+make html
 ```
