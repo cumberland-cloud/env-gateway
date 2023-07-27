@@ -10,7 +10,7 @@ recursive:
   path: modules
 
 output:
-  file: ./docs/source/OVERVIEW.md
+  file: ./docs/source/TFDOCS.md
   mode: inject
 
 content: |-
