@@ -31,7 +31,7 @@ module "ecr" {
     source              = "git::https://github.com/cumberland-cloud/modules-ecr.git?ref=v1.0.0"
 
     repository          = {
-        kms_key_arn     = module.kms.key.arn
+        key             = module.kms.key
         name            = each.value.name
         namespace       = "${local.namespaces.root}/${each.value.namespace}"
         policy          = data.aws_iam_policy_document.ecr_access[each.key].json

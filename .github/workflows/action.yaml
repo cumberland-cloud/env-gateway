@@ -22,8 +22,9 @@ jobs:
     with:
       TFDOCS: true
   Release:
-    uses: cumberland-cloud/workflows/.github/workflows/gh-pages.yaml@master
+    uses: cumberland-cloud/workflows/.github/workflows/tf-release.yaml@master
     needs: [ Scan, Lint ]
+    secrets: inherit
     with:
       TF_STATE_KEY: gateway/terraform.tfstate
   
