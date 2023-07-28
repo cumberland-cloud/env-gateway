@@ -1,5 +1,5 @@
 resource "aws_route53_record" "example" {
-  name                      = aws_api_gateway_domain_name.example.domain_name
+  name                      = aws_api_gateway_domain_name.this.domain_name
   type                      = "A"
   zone_id                   = data.aws_route53_zone.domain.id
 
@@ -10,7 +10,7 @@ resource "aws_route53_record" "example" {
   }
 }
 
-resource "aws_api_gateway_domain_name" "example" {
+resource "aws_api_gateway_domain_name" "this" {
   certificate_arn               = data.aws_acm_certificate_validation.domain.certificate_arn
   domain_name                   = "api.${local.domain}"
 }

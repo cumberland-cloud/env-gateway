@@ -3,10 +3,12 @@ resource "aws_api_gateway_account" "this" {
 }
 
 resource "aws_api_gateway_rest_api" "this" {
+    name                        = "${local.namespace.root}-gateway"
+
     lifecycle {
         create_before_destroy   = true
     }
-    name                        = "${local.namespace.root}-gateway"
+
 }
 
 resource "aws_api_gateway_request_validator" "this" {

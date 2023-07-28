@@ -1,14 +1,5 @@
 formatter: "markdown table"
 
-sections:
-  hide:
-    - resources
-    - requirements
-
-recursive:
-  enabled: true
-  path: modules
-
 output:
   file: ./docs/source/TFDOCS.md
   mode: inject

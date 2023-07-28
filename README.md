@@ -7,7 +7,7 @@ Refer to [hosted docs]() for more information regarding this project.
 ## Quickstart
 
 ```shell
-terraform init -upgrade
+terraform init -upgrade -backend-config="key=gateway/terraform.tfstate"
 terraform plan 
 terraform apply
 ```

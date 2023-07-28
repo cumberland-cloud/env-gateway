@@ -3,7 +3,6 @@ terraform {
         bucket          = "cumberland-cloud-gateway-terraform-state"
         dynamodb_table  = "cumberland-cloud-gateway-terraform-lock"
         encrypted       = true
-        key             = "terraform.tfstate"
         region          = "us-east-1"
     }
     required_providers {

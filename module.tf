@@ -1,11 +1,11 @@
 module "iam" {
-    source              = "git::https://github.com/cumberland-cloud/modules-iam.git?ref=master"
+    source              = "git::https://github.com/cumberland-cloud/modules-iam.git?ref=v1.0.0"
 
     namespace           = local.namespaces.root
 }
 
 module "kms" {
-  source                = "https://github.com/cumberland-cloud/modules-kms.git?ref=8842d57"
+  source                = "https://github.com/cumberland-cloud/modules-kms.git?ref=v1.0.0"
 
   key                   = {
     alias               = local.namespaces.root
@@ -13,7 +13,7 @@ module "kms" {
 }
 
 module "cognito" {
-    source              = "git::https://github.com/cumberland-cloud/modules-cognito.git?ref=master"
+    source              = "git::https://github.com/cumberland-cloud/modules-cognito.git?ref=v1.0.0"
 
     cognito             = {
         user_pool_name  = local.namespaces.root
@@ -28,7 +28,7 @@ module "cognito" {
 module "ecr" {
     depends_on          = [ module.kms ]
     for_each            = local.ecrs
-    source              = "git::https://github.com/cumberland-cloud/modules-ecr.git?ref=master"
+    source              = "git::https://github.com/cumberland-cloud/modules-ecr.git?ref=v1.0.0"
 
     repository          = {
         kms_key_arn     = module.kms.key.arn
@@ -46,7 +46,7 @@ module "lambda" {
         module.iam 
     ]
     for_each            = local.endpoints
-    source              = "git::https://github.com/cumberland-cloud/modules-lambda.git?ref=master"
+    source              = "git::https://github.com/cumberland-cloud/modules-lambda.git?ref=v1.0.0"
 
     lambda              = {
         function_name   = each.value.path
