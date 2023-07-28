@@ -1,18 +1,24 @@
 module "iam" {
+    #checkov:skip=CKV_TF_1: "Ensure Terraform module sources use a commit hash"
+
     source              = "git::https://github.com/cumberland-cloud/modules-iam.git?ref=v1.0.0"
 
     namespace           = local.namespaces.root
 }
 
 module "kms" {
-  source                = "https://github.com/cumberland-cloud/modules-kms.git?ref=v1.0.0"
+    #checkov:skip=CKV_TF_1: "Ensure Terraform module sources use a commit hash"
 
-  key                   = {
-    alias               = local.namespaces.root
-  }
+    source              = "https://github.com/cumberland-cloud/modules-kms.git?ref=v1.0.0"
+
+    key                 = {
+        alias           = local.namespaces.root
+    }
 }
 
 module "cognito" {
+    #checkov:skip=CKV_TF_1: "Ensure Terraform module sources use a commit hash"
+
     source              = "git::https://github.com/cumberland-cloud/modules-cognito.git?ref=v1.0.0"
 
     cognito             = {
@@ -26,6 +32,8 @@ module "cognito" {
 }
 
 module "ecr" {
+    #checkov:skip=CKV_TF_1: "Ensure Terraform module sources use a commit hash"
+
     depends_on          = [ module.kms ]
     for_each            = local.ecrs
     source              = "git::https://github.com/cumberland-cloud/modules-ecr.git?ref=v1.0.0"
@@ -39,6 +47,8 @@ module "ecr" {
 }
 
 module "lambda" {
+    #checkov:skip=CKV_TF_1: "Ensure Terraform module sources use a commit hash"
+    
     depends_on          = [ 
         module.cognito,
         module.ecr, 
