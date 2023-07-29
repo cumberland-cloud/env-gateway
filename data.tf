@@ -8,7 +8,7 @@ data "aws_acm_certificate" "domain" {
 }
 
 data "aws_route53_zone" "domain" {
-  name                          = "${local.domain}"
+  name                          = local.domain
   private_zone                  = false
 }
 
