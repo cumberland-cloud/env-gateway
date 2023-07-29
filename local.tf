@@ -169,7 +169,7 @@ locals {
     system_endpoints                = flatten([ 
         for key, system in local.namespaces.sytem:[
             for endpoint in system.endpoints: {
-                environment         = endpoinT.environment
+                environment         = endpoint.environment
                 image               = "${local.namespaces.root}/${local.namespaces.system.root}/${system.root}/${endpoint.image}"
                 method              = endpoint.method
                 path                = "/${local.namespaces.root}/${local.namespaces.system.root}/${system.root}/${endpoint.image}"
@@ -179,7 +179,7 @@ locals {
             }
         ] if !contains(local.metadata_keys, key)
     ])
-    # final
+    # pre deployment locals
     ecrs                            = concat([ 
         for ecr in local.namespaces.tenant.ecrs: 
             "${local.namespaces.root}/${local.namespaces.tenant.root}/${ecr}"
@@ -201,4 +201,13 @@ locals {
         ): 
             index                   => endpoint
     }
+    # post deployment locals
+    authorize_lambda_index          = keys({ 
+        for k,v in local.endpoints: 
+            k                       => v 
+            if v.type == "system" 
+                && v.type_key == "auth" 
+                && strcontains(v.image, "authorize")
+    })[0]
+    redeploy_hash                  = sha1(jsonencode(aws_api_gateway_rest_api.example.body))
 }

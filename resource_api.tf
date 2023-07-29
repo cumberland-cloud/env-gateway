@@ -1,14 +1,49 @@
 resource "aws_api_gateway_account" "this" {
-  cloudwatch_role_arn           = module.iam.service_roles["api_gateway"].arn
+    cloudwatch_role_arn         = module.iam.service_roles["api_gateway"].arn
 }
 
 resource "aws_api_gateway_rest_api" "this" {
-    name                        = "${local.namespace.root}-gateway"
+    name                        = "${local.namespace.root}-api-gateway"
 
     lifecycle {
         create_before_destroy   = true
     }
+}
 
+resource "aws_api_gateway_deployment" "this" {
+    rest_api_id                 = aws_api_gateway_rest_api.this.id
+    triggers                    = {
+        redeployment            = local.redeploy_hash
+    }
+
+    lifecycle {
+        create_before_destroy   = true
+    }
+}
+
+resource "aws_api_gateway_stage" "this" {
+    deployment_id               = aws_api_gateway_deployment.this.id
+    rest_api_id                 = aws_api_gateway_rest_api.this.id
+    stage_name                  = "production"
+}
+
+resource "aws_api_gateway_method_settings" "this" {
+    rest_api_id                 = aws_api_gateway_rest_api.this.id
+    stage_name                  = aws_api_gateway_stage.this.stage_name
+    method_path                 = "*/*"
+
+    settings {
+        metrics_enabled         = true
+        logging_level           = "INFO"
+    }
+}
+
+resource "aws_api_gateway_authorizer" "this" {
+    authorizer_uri              = module.lambda[local.authorize_lambda_index].invoke_arn
+    name                        = "${local.namespaces.root}-api-authorizer"
+    identity_source             = "method.request.header.authorization"
+    rest_api_id                 = aws_api_gateway_rest_api.this.id
+    type                        = "TOKEN"
 }
 
 resource "aws_api_gateway_request_validator" "this" {
@@ -46,39 +81,7 @@ resource "aws_api_gateway_resource" "system" {
     rest_api_id                 = aws_api_gateway_rest_api.this.id
 }
 
-resource "aws_api_gateway_resource" "endpoints" {
-    for_each                    = local.endpoints
-
-    parent_id                   = each.parent_id
-    path_part                   = each.value.root
-    rest_api_id                 = aws_api_gateway_rest_api.this.id
-}
-
-resource "aws_api_gateway_method" "endpoints" {
-    for_each                    = local.endpoints
-
-    authorization               = each.value.authorization
-    http_method                 = each.value.method
-    resource_id                 = aws_api_gateway_resource.endpoints[each.key].id
-    rest_api_id                 = aws_api_gateway_rest_api.this.id
-    request_validator_id        = aws_api_gateway_request_validator.this.id
-    request_models              = {
-        "application/json"      = try(aws_api_gateway_model.endpoints[each.value].name, "Empty")
-    }
-}
-
-resource "aws_api_gateway_integration" "endpoints" {
-    for_each                    = local.endpoints
-    
-    http_method                 = aws_api_gateway_method.endpoints[each.key].http_method
-    resource_id                 = aws_api_gateway_resource.endpoints[each.key].id
-    rest_api_id                 = aws_api_gateway_rest_api.this.id
-    integration_http_method     = "POST"
-    type                        = "AWS_PROXY"
-    uri                         = module.lambda[each.key].invoke_arn
-}
-
-resource "aws_api_gateway_model" "endpoints" {
+resource "aws_api_gateway_model" "this" {
     for_each                    = { 
         for k,v in local.endpoints:
             k                   => v if try(v.request_model, null) != null
