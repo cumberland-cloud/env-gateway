@@ -167,7 +167,7 @@ locals {
         ] if !contains(local.metadata_keys, key)
     ])
     system_endpoints                = flatten([ 
-        for key, system in local.namespaces.sytem:[
+        for key, system in local.namespaces.system:[
             for endpoint in system.endpoints: {
                 environment         = endpoint.environment
                 image               = "${local.namespaces.root}/${local.namespaces.system.root}/${system.root}/${endpoint.image}"
