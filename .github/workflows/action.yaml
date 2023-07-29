@@ -27,4 +27,5 @@ jobs:
     secrets: inherit
     with:
       TF_STATE_KEY: gateway/terraform.tfstate
+      TF_DEPLOY: true
   

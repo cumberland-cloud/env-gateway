@@ -14,7 +14,8 @@ terraform {
 }
 
 provider "aws" {
-    default_tags        = {
+    default_tags {
+    tags                = {
         Contact         = "chinchalinchin@gmail.com"
         Component       = "Gateway"
         Environment     = "Production"
@@ -22,4 +23,5 @@ provider "aws" {
         Maintainer      = "Grant Moore"
         Project         = "Cumberland Cloud"
     }
+  }
 }
