@@ -13,6 +13,7 @@ resource "aws_route53_record" "this" {
 resource "aws_api_gateway_domain_name" "this" {
   certificate_arn               = data.aws_acm_certificate_validation.domain.certificate_arn
   domain_name                   = "api.${local.domain}"
+  security_policy               = "TLS_1_2"
 }
 
 resource "aws_api_gateway_base_path_mapping" "this" {

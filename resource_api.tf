@@ -1,3 +1,11 @@
+resource "aws_cloudwatch_log_group" "this" {
+    #checkov:skip=CKV_AWS_338: "Ensure CloudWatch log groups retains logs for at least 1 year"
+        # NOTE: checkov's a golddigger
+    kms_key_id                      = module.key.key.arn
+    name                            = "/aws/apigateway/${local.namespaces.root}-api-gateway"
+    retention_in_days               = 14
+}
+
 resource "aws_api_gateway_account" "this" {
     cloudwatch_role_arn         = module.iam.service_roles["api_gateway"].arn
 }
@@ -25,6 +33,12 @@ resource "aws_api_gateway_stage" "this" {
     deployment_id               = aws_api_gateway_deployment.this.id
     rest_api_id                 = aws_api_gateway_rest_api.this.id
     stage_name                  = "production"
+    xray_tracing_enabled        = true
+
+    access_log_settings {
+        destination_arn         = aws_cloudwatch_log_group.this.arn
+        format                  = "json"
+   }
 }
 
 resource "aws_api_gateway_method_settings" "this" {
