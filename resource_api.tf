@@ -2,7 +2,7 @@ resource "aws_cloudwatch_log_group" "this" {
     #checkov:skip=CKV_AWS_338: "Ensure CloudWatch log groups retains logs for at least 1 year"
         # NOTE: checkov's a golddigger
     kms_key_id                      = module.key.key.arn
-    name                            = "/aws/apigateway/${local.namespaces.root}-api-gateway"
+    name                            = "/aws/apigateway/${local.namespaces.namespace}-api-gateway"
     retention_in_days               = 14
 }
 
@@ -11,7 +11,7 @@ resource "aws_api_gateway_account" "this" {
 }
 
 resource "aws_api_gateway_rest_api" "this" {
-    name                        = "${local.namespaces.root}-api-gateway"
+    name                        = "${local.namespaces.namespace}-api-gateway"
 
     lifecycle {
         create_before_destroy   = true
@@ -54,21 +54,21 @@ resource "aws_api_gateway_method_settings" "this" {
 
 resource "aws_api_gateway_authorizer" "this" {
     authorizer_uri              = module.lambda[local.authorize_lambda_index].invoke_arn
-    name                        = "${local.namespaces.root}-api-authorizer"
+    name                        = "${local.namespaces.namespace}-api-authorizer"
     identity_source             = "method.request.header.authorization"
     rest_api_id                 = aws_api_gateway_rest_api.this.id
     type                        = "TOKEN"
 }
 
 resource "aws_api_gateway_request_validator" "this" {
-  name                          = "${local.namespaces.root}-request-validator"
+  name                          = "${local.namespaces.namespace}-request-validator"
   rest_api_id                   = aws_api_gateway_rest_api.this.id
   validate_request_body         = true
   validate_request_parameters   = true
 }
 
 resource "aws_api_gateway_resource" "root" {
-    parent_id                   = aws_api_gateway_rest_api.this.root_resource_id
+    parent_id                   = aws_api_gateway_rest_api.this.namespace_resource_id
     path_part                   = "gateway"
     rest_api_id                 = aws_api_gateway_rest_api.this.id
 }
@@ -80,7 +80,7 @@ resource "aws_api_gateway_resource" "tenants" {
     }
 
     parent_id                   = each.parent_id
-    path_part                   = each.value.root
+    path_part                   = each.value.namespace
     rest_api_id                 = aws_api_gateway_rest_api.this.id
 }
 
@@ -91,7 +91,7 @@ resource "aws_api_gateway_resource" "system" {
     }
 
     parent_id                   = each.parent_id
-    path_part                   = each.value.root
+    path_part                   = each.value.namespace
     rest_api_id                 = aws_api_gateway_rest_api.this.id
 }
 
