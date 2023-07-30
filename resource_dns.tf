@@ -11,13 +11,17 @@ resource "aws_route53_record" "this" {
 }
 
 resource "aws_api_gateway_domain_name" "this" {
-  certificate_arn               = data.aws_acm_certificate.domain.certificate_arn
-  domain_name                   = "api.${local.domain}"
-  security_policy               = "TLS_1_2"
+  certificate_arn         = data.aws_acm_certificate.domain.certificate_arn
+  domain_name             = "api.${local.domain}"
+  security_policy         = "TLS_1_2"
 }
 
 resource "aws_api_gateway_base_path_mapping" "this" {
-  api_id                        = aws_api_gateway_rest_api.this.id
-  stage_name                    = aws_api_gateway_stage.this.stage_name
-  domain_name                   = aws_api_gateway_domain_name.this.domain_name
+  api_id                  = aws_api_gateway_rest_api.this.id
+  stage_name              = aws_api_gateway_stage.this.stage_name
+  domain_name             = aws_api_gateway_domain_name.this.domain_name
+}
+
+resource "aws_api_gateway_client_certificate" "this" {
+  description             = "${local.project_title} client certificate"
 }

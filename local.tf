@@ -3,6 +3,7 @@ locals {
     domain                                  = "cumberland-cloud.com"
     lambda_prefix                           = "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.acocunt_id}:function"
     metadata_keys                           = [ "ecrs", "namespace" ]
+    project_title                           = title(replace(local.namespaces.namespace, "-", " "))
     tenant_access_group_name                = "${local.namespace.namespace}-tenant-access"
     # master configuration
     #   NOTES:
