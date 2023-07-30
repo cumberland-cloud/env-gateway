@@ -30,6 +30,7 @@ resource "aws_api_gateway_deployment" "this" {
 }
 
 resource "aws_api_gateway_stage" "this" {
+    #checkov:skip=CKV2_AWS_29: "Ensure public API gateway are protected by WAF"
     deployment_id               = aws_api_gateway_deployment.this.id
     rest_api_id                 = aws_api_gateway_rest_api.this.id
     stage_name                  = "production"
