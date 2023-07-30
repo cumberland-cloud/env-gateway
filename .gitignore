@@ -3,3 +3,4 @@
 **/*.terrraform
 **/*.tfstate
 **/*venv*
+/docs/build/**
