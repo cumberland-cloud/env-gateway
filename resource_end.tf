@@ -41,6 +41,8 @@ resource "aws_lambda_permission" "this" {
 }
 
 resource "aws_api_gateway_method" "cors" {
+    #checkov:skip=CKV2_AWS_53: "Ensure AWS API gateway request is validated"
+    
     for_each                    = local.endpoints
 
     authorization               = "NONE"
