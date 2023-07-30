@@ -5,6 +5,8 @@ on:
   push:
   pull_request:
     branches:
+      - test
+      - dev
       - master
       - main
   workflow_dispatch:
