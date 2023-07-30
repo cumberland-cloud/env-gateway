@@ -31,6 +31,9 @@ resource "aws_api_gateway_deployment" "this" {
 
 resource "aws_api_gateway_stage" "this" {
     #checkov:skip=CKV2_AWS_29: "Ensure public API gateway are protected by WAF"
+
+    cache_cluster_enabled       = true
+    cache_cluster_size          = 13.5
     deployment_id               = aws_api_gateway_deployment.this.id
     rest_api_id                 = aws_api_gateway_rest_api.this.id
     stage_name                  = "production"
@@ -48,6 +51,9 @@ resource "aws_api_gateway_method_settings" "this" {
     method_path                 = "*/*"
 
     settings {
+        caching_enabled         = true
+        cache_ttl_in_seconds    = 300
+        cache_data_encrypted    = true
         metrics_enabled         = true
         logging_level           = "INFO"
     }
