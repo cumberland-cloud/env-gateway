@@ -1,4 +1,4 @@
-locals {
+locals { 
     # master configuration
     #   NOTES:
     #       1. The image specifed in an endpoint configuration must be defined in the `ecrs` property
