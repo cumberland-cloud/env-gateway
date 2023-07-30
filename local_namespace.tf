@@ -149,9 +149,9 @@ locals {
             namespace                       = "system"
             auth                            = {
                 namespace                   = "auth"
-                ecrs                        = [ "authorize", "login", "register" ]
+                ecrs                        = [ "authorize", "token", "register" ]
                 endpoints                   = [{
-                    authorization           = 
+                    authorization           = aws_api_gateway_authorizer.this.id
                     image                   = "authorize"
                     method                  = "GET"
                     environment             = {
@@ -167,14 +167,47 @@ locals {
                     image                   = "token"
                     method                  = "POST"
                     environment             = {
-                        CLIENT_ID           = "TODO"
+                        CLIENT_ID           = module.cognito.user_pool.client_id
+                    }
+                    request_model           = {
+                        type                = "object"
+                        required            = [ "tenant_id", "inventory_id", "quantity"]
+                        properties          = {
+                            username        = {
+                                type        = "string"
+                            }
+                            password        = {
+                                type        = "string"
+                            }
+                        }
                     }
                 },{
                     authorization           = "NONE"
                     image                   = "register"
                     method                  = "POST"
                     environment             = {
-                        CLIENT_ID           = "TODO"
+                        CLIENT_ID           = module.cognito.user_pool.client_id
+                    }
+                    request_model           = {
+                        type                = "object"
+                        required            = [ "tenant_id", "inventory_id", "quantity"]
+                        properties          = {
+                            username        = {
+                                type        = "string"
+                            }
+                            password        = {
+                                type        = "string"
+                            }
+                            first_name      = {
+                                type        = "string"
+                            }
+                            last_name       = {
+                                type        = "string"
+                            }
+                            email           = {
+                                type        = string
+                            }
+                        }
                     }
                 }]
             }
