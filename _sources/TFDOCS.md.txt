@@ -1,5 +1,23 @@
 # Terraform Docs
 
 <!-- BEGIN_TF_DOCS -->
-Terraform Docs Placeholder
+
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_cognito"></a> [cognito](#module\_cognito) | git::https://github.com/cumberland-cloud/modules-cognito.git | v1.0.0 |
+| <a name="module_ecr"></a> [ecr](#module\_ecr) | git::https://github.com/cumberland-cloud/modules-ecr.git | v1.0.0 |
+| <a name="module_iam"></a> [iam](#module\_iam) | git::https://github.com/cumberland-cloud/modules-iam.git | v1.0.0 |
+| <a name="module_kms"></a> [kms](#module\_kms) | git::https://github.com/cumberland-cloud/modules-kms.git | v1.0.0 |
+| <a name="module_lambda"></a> [lambda](#module\_lambda) | git::https://github.com/cumberland-cloud/modules-lambda.git | v1.0.0 |
+
+## Inputs
+
+No inputs.
+
+## Outputs
+
+No outputs.
 <!-- END_TF_DOCS -->  
