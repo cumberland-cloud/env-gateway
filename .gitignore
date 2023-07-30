@@ -1,3 +1,5 @@
 **/*.zip
 **/*.gz
 **/*.terrraform
+**/*.tfstate
+**/*venv*
