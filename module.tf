@@ -9,7 +9,7 @@ module "iam" {
 module "kms" {
     #checkov:skip=CKV_TF_1: "Ensure Terraform module sources use a commit hash"
 
-    source              = "https://github.com/cumberland-cloud/modules-kms.git?ref=v1.0.0"
+    source              = "git::https://github.com/cumberland-cloud/modules-kms.git?ref=v1.0.0"
 
     key                 = {
         alias           = local.namespaces.root
