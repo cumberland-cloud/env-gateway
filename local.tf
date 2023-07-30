@@ -2,16 +2,16 @@ locals {
     # constants
     domain                                  = "cumberland-cloud.com"
     lambda_prefix                           = "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.acocunt_id}:function"
-    metadata_keys                           = [ "ecrs", "root" ]
-    tenant_access_group_name                = "${local.namespace.root}-tenant-access"
+    metadata_keys                           = [ "ecrs", "namespace" ]
+    tenant_access_group_name                = "${local.namespace.namespace}-tenant-access"
     # master configuration
     #   NOTES:
     #       1. The image specifed in an endpoint configuration must be defined in the `ecrs` property
     #           of that namespace's branch.
     namespaces                              = {
-        root                                = "cumberland-cloud"
+        namespace                           = "cumberland-cloud"
         tenant                              = {
-            root                            = "tenant"
+            namespace                       = "tenant"
             ecrs                            = [
                 "get-sale",
                 "get-inventory",
@@ -19,7 +19,7 @@ locals {
                 "post-sale"
             ]
             cafe_mark                       = {
-                root                        = "cafe-mark"
+                namespace                   = "cafe-mark"
                 endpoints                   = [{
                     authorization           = "TODO"
                     image                   = "get-sale"
@@ -66,7 +66,7 @@ locals {
                 }]
             }
             sunshine_daze                   = {
-                root                        = "sunshine-daze"
+                namespace                   = "sunshine-daze"
                 endpoints                   = [{
                     authorization           = "TODO"
                     image                   = "get-sale"
@@ -114,9 +114,9 @@ locals {
             }
         }
         system                              = {
-            root                            = "system"
+            namespace                       = "system"
             auth                            = {
-                root                        = "auth"
+                namespace                   = "auth"
                 ecrs                        = [
                     "authorize",
                     "login",
@@ -156,11 +156,11 @@ locals {
     tenant_endpoints                = flatten([ 
         for key, tenant in local.namespaces.tenant:[
             for endpoint in tenant.endpoints: {
-                image               = "${local.namespaces.root}/${local.namespaces.tenant.root}/${endpoint.image}"
+                image               = "${local.namespaces.namespace}/${local.namespaces.tenant.namespace}/${endpoint.image}"
                 environment         = endpoint.environment
                 method              = endpoint.method
-                path                = "/${local.namespaces.root}/${local.namespaces.tenant.root}/${tenant.root}/${endpoint.image}"
-                parent_id           = aws_api_gateway_resource.tenants[tenant.root].id
+                path                = "/${local.namespaces.namespace}/${local.namespaces.tenant.namespace}/${tenant.namespace}/${endpoint.image}"
+                parent_id           = aws_api_gateway_resource.tenants[tenant.namespace].id
                 type                = "tenant"
                 type_key            = key
             }
@@ -170,10 +170,10 @@ locals {
         for key, system in local.namespaces.system:[
             for endpoint in system.endpoints: {
                 environment         = endpoint.environment
-                image               = "${local.namespaces.root}/${local.namespaces.system.root}/${system.root}/${endpoint.image}"
+                image               = "${local.namespaces.namespace}/${local.namespaces.system.namespace}/${system.namespace}/${endpoint.image}"
                 method              = endpoint.method
-                path                = "/${local.namespaces.root}/${local.namespaces.system.root}/${system.root}/${endpoint.image}"
-                parent_id           = aws_api_gateway_resource.systems[system.root].id
+                path                = "/${local.namespaces.namespace}/${local.namespaces.system.namespace}/${system.namespace}/${endpoint.image}"
+                parent_id           = aws_api_gateway_resource.systems[system.namespace].id
                 type                = "system"
                 type_key            = key
             }
@@ -182,10 +182,10 @@ locals {
     # pre deployment locals
     ecrs                            = concat([ 
         for ecr in local.namespaces.tenant.ecrs: 
-            "${local.namespaces.root}/${local.namespaces.tenant.root}/${ecr}"
+            "${local.namespaces.namespace}/${local.namespaces.tenant.namespace}/${ecr}"
     ],[
         for ecr in local.namespace.system.auth.ecrs:
-            "${local.namespaces.root}/${local.namespaces.system.root}/${local.namespaces.system.auth.root}/${ecr}"
+            "${local.namespaces.namespace}/${local.namespaces.system.namespace}/${local.namespaces.system.auth.namespace}/${ecr}"
     ])
     ecr_endpoint_access             = {
         for ecr in local.ecrs:

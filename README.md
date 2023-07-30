@@ -4,7 +4,7 @@
 
 [![pages-build-deployment](https://github.com/cumberland-cloud/env-gateway/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/cumberland-cloud/env-gateway/actions/workflows/pages/pages-build-deployment)
 
-A Terraform project for deploying the infrastructure that supports the [Cumberland Cloud Gateway]().
+A Terraform project for deploying the infrastructure that supports the [Cumberland Cloud API Gateway]().
 
 Refer to [hosted docs](https://cumberland-cloud.github.io/env-gateway/) for more information regarding this project.
 
