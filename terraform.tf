@@ -4,7 +4,7 @@ terraform {
   backend "s3" {
     bucket              = "cumberland-cloud-terraform-state"
     dynamodb_table      = "cumberland-cloud-terraform-locks"
-    encrypted           = true
+    encrypt             = true
     region              = "us-east-1"
   }
 
