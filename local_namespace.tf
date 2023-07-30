@@ -205,7 +205,7 @@ locals {
                                 type        = "string"
                             }
                             email           = {
-                                type        = string
+                                type        = "string"
                             }
                         }
                     }
