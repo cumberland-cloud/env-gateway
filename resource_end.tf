@@ -1,8 +1,8 @@
 resource "aws_api_gateway_resource" "this" {
     for_each                    = local.endpoints
 
-    parent_id                   = each.parent_id_key
-    path_part                   = each.value.namespace
+    parent_id                   = aws_api_gateway_resource.namespaces[each.value.namespace]
+    path_part                   = each.value.subspace
     rest_api_id                 = aws_api_gateway_rest_api.this.id
 }
 
@@ -94,4 +94,17 @@ resource "aws_api_gateway_integration_response" "cors" {
             status_code         = 200
         })
     }
+}
+
+resource "aws_api_gateway_model" "this" {
+    for_each                    = { 
+        for k,v in local.endpoints:
+            k                   => v if try(v.request_model, null) != null
+    }
+
+    rest_api_id                 = aws_api_gateway_rest_api.this.id
+    name                        = "${each.value.image}-model"
+    description                 = "a JSON schema for ${each.value.image} endpoints"
+    content_type                = "application/json"
+    schema                      = jsonencode(each.value.request_model)
 }

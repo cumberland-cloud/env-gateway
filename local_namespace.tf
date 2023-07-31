@@ -18,21 +18,21 @@ locals {
                     image                   = "get-sale"
                     method                  = "GET"
                     environment             = { 
-                        TENANT              = "cafe-mark"
+                        TENANT              = local.tenant_namespaces[0]
                     }
                 },{
                     authorization           = "NONE"
                     image                   = "get-inventory"
                     method                  = "GET"
                     environment             = { 
-                        TENANT              = "cafe-mark"
+                        TENANT              = local.tenant_namespaces[0]
                     }
                 },{
                     authorization           = true
                     image                   = "post-sale"
                     method                  = "POST"
                     environment             = { 
-                        TENANT              = "cafe-mark"
+                        TENANT              = local.tenant_namespaces[0]
                     }
                     request_model           = {
                         type                = "object"
@@ -54,7 +54,7 @@ locals {
                     image                   = "post-inventory"
                     method                  = "POST"
                     environment             = { 
-                        TENANT              = "cafe-mark"
+                        TENANT              = local.tenant_namespaces[0]
                     }
                     request_model           = {
                         type                = "object"
@@ -85,21 +85,21 @@ locals {
                     image                   = "get-sale"
                     method                  = "GET"
                     environment             = { 
-                        TENANT              = "sunshine-daze"
+                        TENANT              = local.tenant_namespaces[1]
                     }
                 },{
                     authorization           = "NONE"
                     image                   = "get-inventory"
                     method                  = "GET"
                     environment             = {
-                        TENANT              = "sunshine-daze"
+                        TENANT              = local.tenant_namespaces[1]
                      }
                 },{
                     authorization           = true
                     image                   = "post-sale"
                     method                  = "POST"
                     environment             = {
-                        TENANT              = "sunshine-daze"
+                        TENANT              = local.tenant_namespaces[1]
                     }
                     request_model           = {
                         type                = "object"
@@ -121,7 +121,7 @@ locals {
                     image                   = "post-inventory"
                     method                  = "POST"
                     environment             = { 
-                        TENANT              = "sunshine-daze"
+                        TENANT              = local.tenant_namespaces[1]
                     }
                     request_model           = {
                         type                = "object"

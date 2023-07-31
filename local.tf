@@ -3,6 +3,7 @@ locals {
         # i can't tell if this is a good idea or the worst idea i've ever had...
     root_namespace                          = keys(local.namespaces)[0]
     tenant_namespace                        = keys(local.namespaces[local.root_namespace])[0]
+    tenant_namespaces                       = local.namespaces[local.root_namespace][local.tenant_namespace]
     system_namespace                        = keys(local.namespaces[local.root_namespace])[1]
     auth_namespace                          = local.namespaces[local.root_namespace][system_namespace][0]
 
@@ -18,6 +19,13 @@ locals {
     project_title                           = title(replace(local.root_namespace, "-", " "))
     tenant_access_group_name                = "${local.root_namespace}-tenant-access"
     # calculations
+    ecr_endpoint_access             = {
+        for ecr in local.ecrs:
+            ecr                     => [
+                for index, endpoint in local.endpoints: 
+                    endpoint.path if ecr == endpoint.image
+            ]
+    }
     endpoints                       = flatten([
         for namespace_key, namespace in local.cumberland_cloud:[
             for subspace_key, subspace in namespace: [
@@ -37,20 +45,6 @@ locals {
             }]
         ]
     ])
-    repositories                        = concat([ 
-        for ecr in local.ecrs.tenant: 
-            "${local.namespace.root}/${local.tenant_namespace}/${ecr}"
-    ],[
-        for ecr in local.ecrs.auth:
-            "${local.root_namespace}/${local.system_namespace}/auth/${ecr}"
-    ])
-    ecr_endpoint_access             = {
-        for ecr in local.ecrs:
-            ecr                     => [
-                for index, endpoint in local.endpoints: 
-                    endpoint.path if ecr == endpoint.image
-            ]
-    }
     endpoints_map                    = {
         for index, endpoint in concat(
             local.tenant_endpoints, 
@@ -58,6 +52,13 @@ locals {
         ): 
             index                   => endpoint
     }
+    repositories                        = concat([ 
+        for ecr in local.ecrs.tenant: 
+            "${local.namespace.root}/${local.tenant_namespace}/${ecr}"
+    ],[
+        for ecr in local.ecrs.auth:
+            "${local.root_namespace}/${local.system_namespace}/auth/${ecr}"
+    ])
     # lambda execution environments
     system_environment              = {
         ACCOUNT_ID          = data.aws_caller_identity.current.account_id
