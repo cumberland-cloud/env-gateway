@@ -3,7 +3,7 @@ module "iam" {
 
     source              = "git::https://github.com/cumberland-cloud/modules-iam.git?ref=v1.0.0"
 
-    namespace           = local.namespaces.root
+    namespace           = local.namespace_skeleton.namespace
 }
 
 module "kms" {
@@ -12,7 +12,7 @@ module "kms" {
     source              = "git::https://github.com/cumberland-cloud/modules-kms.git?ref=v1.0.0"
 
     key                 = {
-        alias           = local.namespaces.root
+        alias           = local.namespace_skeleton.namespace
     }
 }
 
@@ -22,7 +22,7 @@ module "cognito" {
     source              = "git::https://github.com/cumberland-cloud/modules-cognito.git?ref=v1.0.0"
 
     cognito             = {
-        user_pool_name  = local.namespaces.root
+        user_pool_name  = local.namespace_skeleton.namespace
         access_group    = {
             name        = local.tenant_access_group_name
             role_arn    = module.iam.tenant_role.arn
@@ -41,7 +41,7 @@ module "ecr" {
     repository          = {
         key             = module.kms.key
         name            = each.value.name
-        namespace       = "${local.namespaces.root}/${each.value.namespace}"
+        namespace       = each.value.namespace
         policy          = data.aws_iam_policy_document.ecr_access[each.key].json
     }
 }

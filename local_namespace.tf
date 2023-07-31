@@ -3,6 +3,25 @@ locals {
     #   NOTES:
     #       1. The image specifed in an endpoint configuration must be defined in the `ecrs` property
     #           of that namespace's branch.
+        # need the names without incurring the wrath of a dependency cycle
+    namespace_skeleton                      = {
+        namespace                           = "cumberland-cloud"
+        tenant                              = {
+            namespace                       = "tenant"
+            cafe_mark                       = {
+                namespace                   = "cafe-mark"
+            }
+            sunshine_daze                   = {
+                namespace                   = "sunshine-daze"
+            }
+        }
+        system                              = {
+            namespace                       = "system"
+            console                         = {
+                namespace                   = "console"
+            }
+        }
+    }
     namespaces                              = {
         namespace                           = "cumberland-cloud"
         tenant                              = {
