@@ -55,12 +55,7 @@ locals {
             index                   => endpoint
     }
     # post deployment locals
-    authorize_lambda_index          = keys({ 
-        for k,v in local.endpoints: 
-            k                       => v 
-            if v.type == "system" 
-                && v.type_key == "auth" 
-                && strcontains(v.image, "authorize")
-    })[0]
-    redeploy_hash                  = sha1(jsonencode(aws_api_gateway_rest_api.example.body))
+    authorize_lambda_name           = "/${local.namespaces.namespace}/${local.namespaces.system.namespace}/${system.namespace}/authorize"
+    authorize_lambda_invoke_arn     = "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${local.authorize_lambda_name}"
+    redeploy_hash                  = sha1(jsonencode(aws_api_gateway_rest_api.this.body))
 }

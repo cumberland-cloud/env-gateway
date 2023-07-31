@@ -61,7 +61,8 @@ resource "aws_api_gateway_method_settings" "this" {
 }
 
 resource "aws_api_gateway_authorizer" "this" {
-    authorizer_uri              = module.lambda[local.authorize_lambda_index].invoke_arn
+    # authorized needs lambda, but lambda needs authorizer...
+    authorizer_uri              = local.authorize_lambda_invoke_arn
     name                        = "${local.namespaces.namespace}-api-authorizer"
     identity_source             = "method.request.header.authorization"
     rest_api_id                 = aws_api_gateway_rest_api.this.id
