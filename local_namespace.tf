@@ -1,9 +1,16 @@
 locals { 
-    # master configuration
-    #   NOTES:
-    #       1. The image specifed in an endpoint configuration must be defined in the `ecrs` property
-    #           of that namespace's branch.
+    # meta configuration
     namespaces                              = {
+        "cumberland-cloud"                  = {
+            "tenant"                        = [ "cafe-mark", "sunshine-daze" ]
+            "system"                        = [ "auth" ]
+        }
+
+    }    
+    # master configuration
+        # note: try to keep this free of resource references, since most of the 
+        #       module resources depend on this bit of configuration.
+    cumberland_cloud                        = {
         tenant                              = {
             cafe_mark                       = {
                 endpoints                   = [{
@@ -146,21 +153,10 @@ locals {
                     authorization           = true
                     image                   = "authorize"
                     method                  = "GET"
-                    environment             = {
-                        ACCOUNT_ID          = data.aws_caller_identity.current.account_id
-                        API_ID              = aws_api_gateway_rest_api.this.id
-                        CLIENT_ID           = module.cognito.user_pool.client_id
-                        GROUP               = "TODO"
-                        USERPOOL_ID         = module.cognito.user_pool.id
-                        REGION              = data.aws_region.current.name
-                    }
                 },{
                     authorization           = "NONE"
                     image                   = "token"
                     method                  = "POST"
-                    environment             = {
-                        CLIENT_ID           = module.cognito.user_pool.client_id
-                    }
                     request_model           = {
                         type                = "object"
                         required            = [ "tenant_id", "inventory_id", "quantity"]
@@ -177,9 +173,6 @@ locals {
                     authorization           = "NONE"
                     image                   = "register"
                     method                  = "POST"
-                    environment             = {
-                        CLIENT_ID           = module.cognito.user_pool.client_id
-                    }
                     request_model           = {
                         type                = "object"
                         required            = [ "tenant_id", "inventory_id", "quantity"]

@@ -1,43 +1,48 @@
 locals {
+    # namespaces
+        # i can't tell if this is a good idea or the worst idea i've ever had...
+    root_namespace                          = keys(local.namespaces)[0]
+    tenant_namespace                        = keys(local.namespaces[local.root_namespace])[0]
+    system_namespace                        = keys(local.namespaces[local.root_namespace])[1]
+    auth_namespace                          = local.namespaces[local.root_namespace][system_namespace][0]
+
     # constants
+    authorize_lambda_name                   = "/${local.root_namespace}/${local.system_namespace}/${local.auth_namespace}/authorize"
+    authorize_lambda_invoke_arn             = "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${local.authorize_lambda_name}"
     domain                                  = "cumberland-cloud.com"
+    ecrs                                    = {
+        "${local.auth_namespace}"           = [ "authorize", "token", "register" ]
+        "${local.tenant_namespace}"         = [ "get-inventory", "get-sale", "post-inventory", "post-sale" ]
+    }
     lambda_prefix                           = "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.acocunt_id}:function"
-    project_title                           = title(replace(local.namespaces.namespace, "-", " "))
-    tenant_access_group_name                = "${local.namespace.namespace}-tenant-access"
-    tenant_ecrs                             = [ "get-inventory", "get-sale", "post-inventory", "post-sale" ]
-    auth_ecrs                               = [ "authorize", "token", "register" ]
-    # intermediate calculations
-    tenant_endpoints                = flatten([ 
-        for key, tenant in local.namespaces.tenant:[
-            for endpoint in tenant.endpoints: {
-                image               = "${local.namespaces.namespace}/${local.namespaces.tenant.namespace}/${endpoint.image}"
-                environment         = endpoint.environment
-                method              = endpoint.method
-                path                = "/${local.namespaces.namespace}/${local.namespaces.tenant.namespace}/${tenant.namespace}/${endpoint.image}"
-                namespace           = "tenant"
-                subspace            = key
-            }
-        ] if !contains(local.metadata_keys, key)
+    project_title                           = title(replace(local.root_namespace, "-", " "))
+    tenant_access_group_name                = "${local.root_namespace}-tenant-access"
+    # calculations
+    endpoints                       = flatten([
+        for namespace_key, namespace in local.cumberland_cloud:[
+            for subspace_key, subspace in namespace: [
+                for endpoint in subspace.endpoints: {
+                    authorization   = endpoint.authorization
+                    environment     = try(endpoint.environment, null)
+                        # note: tenant images are not tenant specific, i.e. all tenants use the same images
+                    image           = namespace_key == local.tenant_namespace ? (
+                                        "${local.root_namespace}/${namespace_key}/${endpoint.image}"
+                                    ): (
+                                        "${local.root_namespace}/${namespace_key}/${subspace_key}/${endpoint.image}"
+                                    )
+                    method          = eachpoint.authorization
+                    path            = "${local.root_namespace}/${namespace_key}/${subspace_key}/${endpoint.image}"
+                    namespace       = namespace_key
+                    subspace        = subspace_key
+            }]
+        ]
     ])
-    system_endpoints                = flatten([ 
-        for key, system in local.namespaces.system:[
-            for endpoint in system.endpoints: {
-                environment         = endpoint.environment
-                image               = "${local.namespaces.namespace}/${local.namespaces.system.namespace}/${system.namespace}/${endpoint.image}"
-                method              = endpoint.method
-                path                = "/${local.namespaces.namespace}/${local.namespaces.system.namespace}/${system.namespace}/${endpoint.image}"
-                namespace           = "system"
-                subspace            = key
-            }
-        ] if !contains(local.metadata_keys, key)
-    ])
-    # pre deployment locals
-    ecrs                            = concat([ 
-        for ecr in local.tenant_ecrs: # TODO
-            "${local.namespaces.namespace}/${local.namespaces.tenant.namespace}/${ecr}"
+    repositories                        = concat([ 
+        for ecr in local.ecrs.tenant: 
+            "${local.namespace.root}/${local.tenant_namespace}/${ecr}"
     ],[
-        for ecr in local.auth_ecrs:
-            "${local.namespaces.namespace}/${local.namespaces.system.namespace}/${local.namespaces.system.auth.namespace}/${ecr}"
+        for ecr in local.ecrs.auth:
+            "${local.root_namespace}/${local.system_namespace}/auth/${ecr}"
     ])
     ecr_endpoint_access             = {
         for ecr in local.ecrs:
@@ -46,15 +51,22 @@ locals {
                     endpoint.path if ecr == endpoint.image
             ]
     }
-    endpoints                       = {
+    endpoints_map                    = {
         for index, endpoint in concat(
             local.tenant_endpoints, 
             local.system_endpoints
         ): 
             index                   => endpoint
     }
-    # post deployment locals
-    authorize_lambda_name           = "/${local.namespaces.namespace}/${local.namespaces.system.namespace}/${system.namespace}/authorize"
-    authorize_lambda_invoke_arn     = "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${local.authorize_lambda_name}"
+    # lambda execution environments
+    system_environment              = {
+        ACCOUNT_ID          = data.aws_caller_identity.current.account_id
+        API_ID              = aws_api_gateway_rest_api.this.id
+        CLIENT_ID           = module.cognito.user_pool.client_id
+        GROUP               = "TODO"
+        USERPOOL_ID         = module.cognito.user_pool.id
+        REGION              = data.aws_region.current.name
+    }
+    # triggers
     redeploy_hash                  = sha1(jsonencode(aws_api_gateway_rest_api.this.body))
 }

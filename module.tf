@@ -35,7 +35,7 @@ module "ecr" {
     #checkov:skip=CKV_TF_1: "Ensure Terraform module sources use a commit hash"
 
     depends_on              = [ module.kms ]
-    for_each                = local.ecrs
+    for_each                = local.repositories
     source                  = "git::https://github.com/cumberland-cloud/modules-ecr.git?ref=v1.0.0"
 
     repository              = {
@@ -61,7 +61,11 @@ module "lambda" {
     lambda                      = {
         function_name           = each.value.path
         execution_role          = module.iam.service_roles["lambda"]
-        environment_variables   = each.value.environment
+        environment_variables   = each.value.namespace == local.system_namespace ? (
+                                    local.system_environment 
+                                ) : ( 
+                                    each.value.environment
+                                )
         image_url               = each.value.image
         kms_key_arn             = module.kms.key.arn
     }
