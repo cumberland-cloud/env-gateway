@@ -1,7 +1,7 @@
 resource "aws_api_gateway_resource" "this" {
     for_each                    = local.endpoints
 
-    parent_id                   = each.parent_id
+    parent_id                   = each.parent_id_key
     path_part                   = each.value.namespace
     rest_api_id                 = aws_api_gateway_rest_api.this.id
 }
@@ -9,7 +9,7 @@ resource "aws_api_gateway_resource" "this" {
 resource "aws_api_gateway_method" "this" {
     for_each                    = local.endpoints
 
-    authorization               = each.value.authorization
+    authorization               = each.value.authorization ? aws_api_gateway_authorizer.this.id : "NONE" 
     http_method                 = each.value.method
     resource_id                 = aws_api_gateway_resource.endpoints[each.key].id
     rest_api_id                 = aws_api_gateway_rest_api.this.id

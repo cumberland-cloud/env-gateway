@@ -2,9 +2,10 @@ locals {
     # constants
     domain                                  = "cumberland-cloud.com"
     lambda_prefix                           = "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.acocunt_id}:function"
-    metadata_keys                           = [ "ecrs", "namespace" ]
     project_title                           = title(replace(local.namespaces.namespace, "-", " "))
     tenant_access_group_name                = "${local.namespace.namespace}-tenant-access"
+    tenant_ecrs                             = [ "get-inventory", "get-sale", "post-inventory", "post-sale" ]
+    auth_ecrs                               = [ "authorize", "token", "register" ]
     # intermediate calculations
     tenant_endpoints                = flatten([ 
         for key, tenant in local.namespaces.tenant:[
@@ -13,9 +14,8 @@ locals {
                 environment         = endpoint.environment
                 method              = endpoint.method
                 path                = "/${local.namespaces.namespace}/${local.namespaces.tenant.namespace}/${tenant.namespace}/${endpoint.image}"
-                parent_id           = aws_api_gateway_resource.tenants[tenant.namespace].id
-                type                = "tenant"
-                type_key            = key
+                namespace           = "tenant"
+                subspace            = key
             }
         ] if !contains(local.metadata_keys, key)
     ])
@@ -26,18 +26,17 @@ locals {
                 image               = "${local.namespaces.namespace}/${local.namespaces.system.namespace}/${system.namespace}/${endpoint.image}"
                 method              = endpoint.method
                 path                = "/${local.namespaces.namespace}/${local.namespaces.system.namespace}/${system.namespace}/${endpoint.image}"
-                parent_id           = aws_api_gateway_resource.systems[system.namespace].id
-                type                = "system"
-                type_key            = key
+                namespace           = "system"
+                subspace            = key
             }
         ] if !contains(local.metadata_keys, key)
     ])
     # pre deployment locals
     ecrs                            = concat([ 
-        for ecr in local.namespaces.tenant.ecrs: 
+        for ecr in local.tenant_ecrs: # TODO
             "${local.namespaces.namespace}/${local.namespaces.tenant.namespace}/${ecr}"
     ],[
-        for ecr in local.namespace.system.auth.ecrs:
+        for ecr in local.auth_ecrs:
             "${local.namespaces.namespace}/${local.namespaces.system.namespace}/${local.namespaces.system.auth.namespace}/${ecr}"
     ])
     ecr_endpoint_access             = {

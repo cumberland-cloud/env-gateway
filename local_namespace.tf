@@ -3,34 +3,11 @@ locals {
     #   NOTES:
     #       1. The image specifed in an endpoint configuration must be defined in the `ecrs` property
     #           of that namespace's branch.
-        # need the names without incurring the wrath of a dependency cycle
-    namespace_skeleton                      = {
-        namespace                           = "cumberland-cloud"
-        tenant                              = {
-            namespace                       = "tenant"
-            cafe_mark                       = {
-                namespace                   = "cafe-mark"
-            }
-            sunshine_daze                   = {
-                namespace                   = "sunshine-daze"
-            }
-        }
-        system                              = {
-            namespace                       = "system"
-            console                         = {
-                namespace                   = "console"
-            }
-        }
-    }
     namespaces                              = {
-        namespace                           = "cumberland-cloud"
         tenant                              = {
-            namespace                       = "tenant"
-            ecrs                            = [ "get-inventory", "get-sale", "post-inventory", "post-sale" ]
             cafe_mark                       = {
-                namespace                   = "cafe-mark"
                 endpoints                   = [{
-                    authorization           = aws_api_gateway_authorizer.this.id
+                    authorization           = true
                     image                   = "get-sale"
                     method                  = "GET"
                     environment             = { 
@@ -44,7 +21,7 @@ locals {
                         TENANT              = "cafe-mark"
                     }
                 },{
-                    authorization           = aws_api_gateway_authorizer.this.id
+                    authorization           = true
                     image                   = "post-sale"
                     method                  = "POST"
                     environment             = { 
@@ -66,7 +43,7 @@ locals {
                         }
                     }
                 },{
-                    authorization           = aws_api_gateway_authorizer.this.id
+                    authorization           = true
                     image                   = "post-inventory"
                     method                  = "POST"
                     environment             = { 
@@ -96,9 +73,8 @@ locals {
                 }]
             }
             sunshine_daze                   = {
-                namespace                   = "sunshine-daze"
                 endpoints                   = [{
-                    authorization           = aws_api_gateway_authorizer.this.id
+                    authorization           = true
                     image                   = "get-sale"
                     method                  = "GET"
                     environment             = { 
@@ -112,7 +88,7 @@ locals {
                         TENANT              = "sunshine-daze"
                      }
                 },{
-                    authorization           = aws_api_gateway_authorizer.this.id
+                    authorization           = true
                     image                   = "post-sale"
                     method                  = "POST"
                     environment             = {
@@ -134,7 +110,7 @@ locals {
                         }
                     }
                 },{
-                    authorization           = aws_api_gateway_authorizer.this.id
+                    authorization           = true
                     image                   = "post-inventory"
                     method                  = "POST"
                     environment             = { 
@@ -165,12 +141,9 @@ locals {
             }
         }
         system                              = {
-            namespace                       = "system"
             auth                            = {
-                namespace                   = "auth"
-                ecrs                        = [ "authorize", "token", "register" ]
                 endpoints                   = [{
-                    authorization           = aws_api_gateway_authorizer.this.id
+                    authorization           = true
                     image                   = "authorize"
                     method                  = "GET"
                     environment             = {
