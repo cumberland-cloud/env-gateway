@@ -1,12 +1,17 @@
-locals { 
-    # meta configuration
-    namespaces                              = {
-        "cumberland-cloud"                  = {
-            "tenant"                        = [ "cafe-mark", "sunshine-daze" ]
-            "system"                        = [ "auth" ]
-        }
-
-    }    
+locals {    
+    # namespaces
+    root_namespace                          = "cumberland-cloud"
+        # top level namespaces
+    tenant_namespace                        = "tenant"
+    system_namespace                        = "system"
+        # second level namespaces
+    tenant_namespaces                       = {
+        cafe_mark                           = "cafe-mark" 
+        sunshine_daze                       ="sunshine-daze" 
+    }
+    system_namespaces                       = {
+        auth                                = "auth" 
+    }
     # master configuration
         # note: try to keep this free of resource references, since most of the 
         #       module resources depend on this bit of configuration.
@@ -18,21 +23,21 @@ locals {
                     image                   = "get-sale"
                     method                  = "GET"
                     environment             = { 
-                        TENANT              = local.tenant_namespaces[0]
+                        TENANT              = local.tenant_namespaces.cafe_mark
                     }
                 },{
                     authorization           = "NONE"
                     image                   = "get-inventory"
                     method                  = "GET"
                     environment             = { 
-                        TENANT              = local.tenant_namespaces[0]
+                        TENANT              = local.tenant_namespaces.cafe_mark
                     }
                 },{
                     authorization           = true
                     image                   = "post-sale"
                     method                  = "POST"
                     environment             = { 
-                        TENANT              = local.tenant_namespaces[0]
+                        TENANT              = local.tenant_namespaces.cafe_mark
                     }
                     request_model           = {
                         type                = "object"
@@ -54,7 +59,7 @@ locals {
                     image                   = "post-inventory"
                     method                  = "POST"
                     environment             = { 
-                        TENANT              = local.tenant_namespaces[0]
+                        TENANT              = local.tenant_namespaces.cafe_mark
                     }
                     request_model           = {
                         type                = "object"
@@ -85,21 +90,21 @@ locals {
                     image                   = "get-sale"
                     method                  = "GET"
                     environment             = { 
-                        TENANT              = local.tenant_namespaces[1]
+                        TENANT              = local.tenant_namespaces.sunshine_daze
                     }
                 },{
                     authorization           = "NONE"
                     image                   = "get-inventory"
                     method                  = "GET"
                     environment             = {
-                        TENANT              = local.tenant_namespaces[1]
+                        TENANT              = local.tenant_namespaces.sunshine_daze
                      }
                 },{
                     authorization           = true
                     image                   = "post-sale"
                     method                  = "POST"
                     environment             = {
-                        TENANT              = local.tenant_namespaces[1]
+                        TENANT              = local.tenant_namespaces.sunshine_daze
                     }
                     request_model           = {
                         type                = "object"
@@ -121,7 +126,7 @@ locals {
                     image                   = "post-inventory"
                     method                  = "POST"
                     environment             = { 
-                        TENANT              = local.tenant_namespaces[1]
+                        TENANT              = local.tenant_namespaces.sunshine_daze
                     }
                     request_model           = {
                         type                = "object"

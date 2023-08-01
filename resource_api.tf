@@ -1,9 +1,9 @@
 resource "aws_cloudwatch_log_group" "this" {
     #checkov:skip=CKV_AWS_338: "Ensure CloudWatch log groups retains logs for at least 1 year"
         # NOTE: checkov's a golddigger
-    kms_key_id                      = module.key.key.arn
-    name                            = "/aws/apigateway/${local.root_namespace}-api-gateway"
-    retention_in_days               = 14
+    kms_key_id                  = module.kms.key.arn
+    name                        = "/aws/apigateway/${local.root_namespace}-api-gateway"
+    retention_in_days           = 14
 }
 
 resource "aws_api_gateway_account" "this" {
@@ -76,7 +76,7 @@ resource "aws_api_gateway_request_validator" "this" {
 }
 
 resource "aws_api_gateway_resource" "root" {
-    parent_id                   = aws_api_gateway_rest_api.this.namespace_resource_id
+    parent_id                   = aws_api_gateway_rest_api.this.root_resource_id
     path_part                   = "gateway"
     rest_api_id                 = aws_api_gateway_rest_api.this.id
 }
@@ -84,8 +84,18 @@ resource "aws_api_gateway_resource" "root" {
 resource "aws_api_gateway_resource" "namespaces" {
     for_each                    = local.cumberland_cloud
             
-
-    parent_id                   = each.parent_id
+    parent_id                   = aws_api_gateway_resource.root.id
     path_part                   = replace(each.key, "_", "-")
     rest_api_id                 = aws_api_gateway_rest_api.this.id
 }
+
+resource "aws_api_gateway_resource" "subspaces" {
+    for_each                    = "TODO"
+
+    parent_id                   = aws_api_gateway_resource.namespaces[each.value.namespace].id
+    path_path                   = replace(each.key, "_", "-")
+    rest_api_id                 = aws_api_gateway_rest_api.this.id
+}
+
+# this only gives gateway/system and gateway/tenant
+# needs another layer for auth and cafe-mark//sunshine-daze

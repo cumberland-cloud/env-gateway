@@ -3,7 +3,7 @@ module "iam" {
 
     source              = "git::https://github.com/cumberland-cloud/modules-iam.git?ref=v1.0.0"
 
-    namespace           = local.namespace_skeleton.namespace
+    namespace           = local.root_namespace
 }
 
 module "kms" {
@@ -12,7 +12,7 @@ module "kms" {
     source              = "git::https://github.com/cumberland-cloud/modules-kms.git?ref=v1.0.0"
 
     key                 = {
-        alias           = local.namespace_skeleton.namespace
+        alias           = local.root_namespace
     }
 }
 
@@ -22,7 +22,7 @@ module "cognito" {
     source                  = "git::https://github.com/cumberland-cloud/modules-cognito.git?ref=v1.0.0"
 
     cognito                 = {
-        user_pool_name      = local.namespace_skeleton.namespace
+        user_pool_name      = local.root_namespace
         access_group        = {
             name            = local.tenant_access_group_name
             role_arn        = module.iam.tenant_role.arn
@@ -35,7 +35,7 @@ module "ecr" {
     #checkov:skip=CKV_TF_1: "Ensure Terraform module sources use a commit hash"
 
     depends_on              = [ module.kms ]
-    for_each                = local.repositories
+    for_each                = local.ecrs
     source                  = "git::https://github.com/cumberland-cloud/modules-ecr.git?ref=v1.0.0"
 
     repository              = {
