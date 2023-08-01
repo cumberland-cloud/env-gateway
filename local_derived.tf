@@ -49,7 +49,14 @@ locals {
     redeploy_hash                           = sha1(jsonencode(aws_api_gateway_rest_api.this.body))
     subspaces                               = flatten([
         for namespace_key, namespace in local.cumberland_cloud:[
-            for subspace_key, subspace in namespace: subspace_key
+            for subspace_key, subspace in namespace: {
+                subspace                    = subspace_key
+                namespace                   = namespace_key
+            }
         ]
     ])
+    subspace_map                            = {
+        for subspace in local.subspaces: 
+            subspace.subspace               => subspace
+    }
 }

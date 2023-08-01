@@ -26,7 +26,7 @@ locals {
                         TENANT              = local.tenant_namespaces.cafe_mark
                     }
                 },{
-                    authorization           = "NONE"
+                    authorization           = false
                     image                   = "get-inventory"
                     method                  = "GET"
                     environment             = { 
@@ -93,7 +93,7 @@ locals {
                         TENANT              = local.tenant_namespaces.sunshine_daze
                     }
                 },{
-                    authorization           = "NONE"
+                    authorization           = false
                     image                   = "get-inventory"
                     method                  = "GET"
                     environment             = {
@@ -159,7 +159,7 @@ locals {
                     image                   = "authorize"
                     method                  = "GET"
                 },{
-                    authorization           = "NONE"
+                    authorization           = false
                     image                   = "token"
                     method                  = "POST"
                     request_model           = {
@@ -175,7 +175,7 @@ locals {
                         }
                     }
                 },{
-                    authorization           = "NONE"
+                    authorization           = false
                     image                   = "register"
                     method                  = "POST"
                     request_model           = {

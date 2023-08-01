@@ -90,7 +90,7 @@ resource "aws_api_gateway_resource" "namespaces" {
 }
 
 resource "aws_api_gateway_resource" "subspaces" {
-    for_each                    = toset(local.subspaces)
+    for_each                    = local.subspace_map
 
     parent_id                   = aws_api_gateway_resource.namespaces[each.value.namespace].id
     path_part                   = replace(each.key, "_", "-")
