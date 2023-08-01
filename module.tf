@@ -67,4 +67,5 @@ module "lambda" {
         image_url               = each.value.image
         kms_key_arn             = module.kms.key.arn
     }
+    namespace                   = local.root_namespace
 }
