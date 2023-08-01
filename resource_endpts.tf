@@ -1,4 +1,4 @@
-resource "aws_api_gateway_resource" "this" {
+resource "aws_api_gateway_resource" "endpoints" {
     for_each                    = local.endpoints_map
 
     parent_id                   = aws_api_gateway_resource.subspaces[each.value.subspace].id
@@ -6,7 +6,7 @@ resource "aws_api_gateway_resource" "this" {
     rest_api_id                 = aws_api_gateway_rest_api.this.id
 }
 
-resource "aws_api_gateway_method" "this" {
+resource "aws_api_gateway_method" "endpoints" {
     for_each                    = local.endpoints_map
 
     authorization               = each.value.authorization ? aws_api_gateway_authorizer.this.id : "NONE" 
@@ -19,7 +19,7 @@ resource "aws_api_gateway_method" "this" {
     }
 }
 
-resource "aws_api_gateway_integration" "this" {
+resource "aws_api_gateway_integration" "endpoints" {
     for_each                    = local.endpoints_map
     
     http_method                 = aws_api_gateway_method.endpoints[each.key].http_method
@@ -30,7 +30,7 @@ resource "aws_api_gateway_integration" "this" {
     uri                         = module.lambda[each.key].invoke_arn
 }
 
-resource "aws_lambda_permission" "this" {
+resource "aws_lambda_permission" "endpoints" {
     for_each                    = local.endpoints_map
 
     statement_id                = "APIGatewayLambdaInvoke"
@@ -47,13 +47,15 @@ resource "aws_api_gateway_method" "cors" {
 
     authorization               = "NONE"
     http_method                 = "OPTIONS"
+    rest_api_id                 = aws_api_gateway_rest_api.this.id
+    resource_id                 = aws_api_gateway_resource.endpoints[each.key].id
 }
 
 resource "aws_api_gateway_method_response" "cors" {
     for_each                    = local.endpoints_map
 
     rest_api_id                 = aws_api_gateway_rest_api.this.id
-    resource_id                 = aws_api_gateway_resource.this[each.key].id
+    resource_id                 = aws_api_gateway_resource.endpoints[each.key].id
     http_method                 = aws_api_gateway_method.cors[each.key].http_method
     response_models             = {
         "application/json"      = "Empty"
@@ -73,7 +75,7 @@ resource "aws_api_gateway_integration" "cors" {
     http_method                 = aws_api_gateway_method.cors[each.key].http_method
     passthrough_behavior        = "WHEN_NO_MATCH"
     rest_api_id                 = aws_api_gateway_rest_api.this.id
-    resource_id                 = aws_api_gateway_resource.this[each.key].id
+    resource_id                 = aws_api_gateway_resource.endpoints[each.key].id
     type                        = "MOCK"
 }
 
@@ -81,7 +83,7 @@ resource "aws_api_gateway_integration_response" "cors" {
     for_each                    = local.endpoints_map
 
     rest_api_id                 = aws_api_gateway_rest_api.this.id
-    resource_id                 = aws_api_gateway_resource.this[each.key].id
+    resource_id                 = aws_api_gateway_resource.endpoints[each.key].id
     http_method                 = aws_api_gateway_method.cors[each.key].http_method
     status_code                 = aws_api_gateway_method_response.cors[each.key].status_code
     response_parameters         = jsonencode({
@@ -96,7 +98,7 @@ resource "aws_api_gateway_integration_response" "cors" {
     }
 }
 
-resource "aws_api_gateway_model" "this" {
+resource "aws_api_gateway_model" "endpoints" {
     for_each                    = { 
         for k,v in local.endpoints_map:
             k                   => v if try(v.request_model, null) != null

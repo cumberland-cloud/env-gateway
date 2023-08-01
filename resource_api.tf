@@ -90,12 +90,9 @@ resource "aws_api_gateway_resource" "namespaces" {
 }
 
 resource "aws_api_gateway_resource" "subspaces" {
-    for_each                    = "TODO"
+    for_each                    = toset(local.subspaces)
 
     parent_id                   = aws_api_gateway_resource.namespaces[each.value.namespace].id
-    path_path                   = replace(each.key, "_", "-")
+    path_part                   = replace(each.key, "_", "-")
     rest_api_id                 = aws_api_gateway_rest_api.this.id
 }
-
-# this only gives gateway/system and gateway/tenant
-# needs another layer for auth and cafe-mark//sunshine-daze

@@ -46,5 +46,10 @@ locals {
             endpoint.dot_identifier         => endpoint
     }
     # trigger for Gateway reployment
-    redeploy_hash                  = sha1(jsonencode(aws_api_gateway_rest_api.this.body))
+    redeploy_hash                           = sha1(jsonencode(aws_api_gateway_rest_api.this.body))
+    subspaces                               = flatten([
+        for namespace_key, namespace in local.cumberland_cloud:[
+            for subspace_key, subspace in namespace: subspace_key
+        ]
+    ])
 }

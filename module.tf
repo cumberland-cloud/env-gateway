@@ -1,11 +1,3 @@
-module "iam" {
-    #checkov:skip=CKV_TF_1: "Ensure Terraform module sources use a commit hash"
-
-    source              = "git::https://github.com/cumberland-cloud/modules-iam.git?ref=v1.0.0"
-
-    namespace           = local.root_namespace
-}
-
 module "kms" {
     #checkov:skip=CKV_TF_1: "Ensure Terraform module sources use a commit hash"
 
@@ -16,6 +8,15 @@ module "kms" {
     }
 }
 
+module "iam" {
+    #checkov:skip=CKV_TF_1: "Ensure Terraform module sources use a commit hash"
+
+    source                  = "git::https://github.com/cumberland-cloud/modules-iam.git?ref=v1.0.0"
+
+    namespace               = local.root_namespace
+}
+
+
 module "cognito" {
     #checkov:skip=CKV_TF_1: "Ensure Terraform module sources use a commit hash"
 
@@ -25,10 +26,10 @@ module "cognito" {
         user_pool_name      = local.root_namespace
         access_group        = {
             name            = local.tenant_access_group_name
-            role_arn        = module.iam.tenant_role.arn
         }
     }
     domain                  = local.domain
+    namespace               = local.root_namespace
 }
 
 module "ecr" {
