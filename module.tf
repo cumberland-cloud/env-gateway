@@ -57,7 +57,7 @@ module "lambda" {
     source                      = "git::https://github.com/cumberland-cloud/modules-lambda.git?ref=v1.0.0"
 
     lambda                      = {
-        function_name           = each.value.path
+        function_name           = each.value.function_name
         execution_role          = module.iam.service_roles["lambda"]
         environment_variables   = each.value.namespace == local.system_namespace ? (
                                     local.system_environment 

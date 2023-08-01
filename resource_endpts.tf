@@ -105,7 +105,7 @@ resource "aws_api_gateway_model" "endpoints" {
     }
 
     rest_api_id                 = aws_api_gateway_rest_api.this.id
-    name                        = "${each.value.image}-model"
+    name                        = "${replace(title(replace(each.value.image, "-", " ")), " ", "")}Model"
     description                 = "a JSON schema for ${each.value.image} endpoints"
     content_type                = "application/json"
     schema                      = jsonencode(each.value.request_model)
