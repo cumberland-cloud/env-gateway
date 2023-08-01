@@ -27,7 +27,7 @@ resource "aws_api_gateway_integration" "endpoints" {
     rest_api_id                 = aws_api_gateway_rest_api.this.id
     integration_http_method     = "POST"
     type                        = "AWS_PROXY"
-    uri                         = module.lambda[each.key].invoke_arn
+    uri                         = module.lambda[each.key].function.invoke_arn
 }
 
 resource "aws_lambda_permission" "endpoints" {
@@ -35,7 +35,7 @@ resource "aws_lambda_permission" "endpoints" {
 
     statement_id                = "APIGatewayLambdaInvoke"
     action                      = "lambda:InvokeFunction"
-    function_name               = module.lambda[each.key].name
+    function_name               = module.lambda[each.key].function.name
     principal                   = "apigateway.amazonaws.com"
     source_arn                  = "${aws_api_gateway_rest_api.this.execution_arn}/*/*/*"
 }
@@ -60,7 +60,7 @@ resource "aws_api_gateway_method_response" "cors" {
     response_models             = {
         "application/json"      = "Empty"
     }
-    reponse_parameters          = {
+    response_parameters         = {
         "method.response.header.Access-Control-Allow-Headers"   = false
         "method.response.header.Access-Control-Allow-Methods"   = false
         "method.response.header.Access-Control-Allow-Origin"    = false
@@ -86,11 +86,11 @@ resource "aws_api_gateway_integration_response" "cors" {
     resource_id                 = aws_api_gateway_resource.endpoints[each.key].id
     http_method                 = aws_api_gateway_method.cors[each.key].http_method
     status_code                 = aws_api_gateway_method_response.cors[each.key].status_code
-    response_parameters         = jsonencode({
+    response_parameters         = {
         "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
         "method.response.header.Access-Control-Allow-Methods" = "'*'"
         "method.response.header.Access-Control-Allow-Origin"  = "'*'"
-    })
+    }
     response_templates          = {
         "application/json"      = jsonencode({
             status_code         = 200

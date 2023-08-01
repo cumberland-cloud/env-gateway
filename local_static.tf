@@ -33,6 +33,6 @@ locals{
         }
     }
     lambda_prefix                           = "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function"
-    project_title                           = title(replace(local.root_namespace, "-", " "))
-    tenant_access_group_name                = "${local.root_namespace}-tenant-access"
+    namespace_title                         = title(replace(local.root_namespace, "-", " "))
+    namespace_uppercase                     = replace(local.namespace_title, " ", "")
 }

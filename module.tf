@@ -24,9 +24,6 @@ module "cognito" {
 
     cognito                 = {
         user_pool_name      = local.root_namespace
-        access_group        = {
-            name            = local.tenant_access_group_name
-        }
     }
     domain                  = local.domain
     namespace               = local.root_namespace
@@ -56,7 +53,7 @@ module "lambda" {
         module.kms,
         module.iam 
     ]
-    for_each                    = local.endpoints
+    for_each                    = local.endpoints_map
     source                      = "git::https://github.com/cumberland-cloud/modules-lambda.git?ref=v1.0.0"
 
     lambda                      = {

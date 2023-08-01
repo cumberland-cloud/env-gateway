@@ -23,5 +23,5 @@ resource "aws_api_gateway_base_path_mapping" "this" {
 }
 
 resource "aws_api_gateway_client_certificate" "this" {
-  description             = "${local.project_title} client certificate"
+  description             = "${local.namespace_title} client certificate"
 }

@@ -1,5 +1,5 @@
 resource "aws_signer_signing_profile" "this" {
-    name_prefix                 = "${local.root_namespace}-signer"
+    name_prefix                 = "${local.namespace_uppercase}Signer"
     platform_id                 = "AWSLambda-SHA384-ECDSA"
 
     signature_validity_period {
