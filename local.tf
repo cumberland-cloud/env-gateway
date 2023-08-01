@@ -5,7 +5,7 @@ locals {
     tenant_namespace                        = keys(local.namespaces[local.root_namespace])[0]
     tenant_namespaces                       = local.namespaces[local.root_namespace][local.tenant_namespace]
     system_namespace                        = keys(local.namespaces[local.root_namespace])[1]
-    auth_namespace                          = local.namespaces[local.root_namespace][system_namespace][0]
+    auth_namespace                          = local.namespaces[local.root_namespace][local.system_namespace][0]
 
     # constants
     authorize_lambda_name                   = "/${local.root_namespace}/${local.system_namespace}/${local.auth_namespace}/authorize"
