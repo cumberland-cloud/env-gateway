@@ -3,7 +3,7 @@
 TODO
 
 ```shell
-terraform init -upgrade
+terraform init -upgrade -backend-config="key=gateway/terraform.tfstate"
 terraform plan 
 terraform apply
 ```

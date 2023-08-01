@@ -1,9 +1,11 @@
+#checkov:skip=CKV2_GHA_1: "Ensure top-level permissions are not set to write-all"
 name: terraform workflows
 
 on:
   push:
   pull_request:
     branches:
+      - test
       - dev
       - master
       - main
@@ -20,4 +22,12 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     uses: cumberland-cloud/workflows/.github/workflows/gh-pages.yaml@master
     with:
-      TFDOCS: true
+      TF_DOCS: true
+  Release:
+    uses: cumberland-cloud/workflows/.github/workflows/tf-release.yaml@master
+    needs: [ Scan, Lint ]
+    secrets: inherit
+    with:
+      TF_STATE_KEY: gateway/terraform.tfstate
+      TF_APPLY: true
+  

@@ -7,8 +7,8 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 # NOTE: Add your project's information here.
-project = 'Cumberland CLoud'
-copyright = '2022'
+project = 'Cumberland Cloud'
+copyright = '2023'
 author = 'Grant Moore'
 release = '1.0.0'
 
@@ -67,7 +67,7 @@ html_theme_options = {
 
     # Specify a base_url used to generate sitemap.xml. If not
     # specified, then no sitemap will be built.
-    'base_url': 'TODO',
+    'base_url': 'https://cumberland-cloud.github.io/env-gateway/',
 
     # Set the color and the accent color
     'color_primary': 'blue',

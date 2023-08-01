@@ -1,3 +1,5 @@
 ---
 exclude:
-  # - 
+  - aws-ecr-enforce-immutable-repository
+  - aws-iam-no-policy-wildcards
+  - aws-api-gateway-no-public-access

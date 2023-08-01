@@ -8,7 +8,7 @@ data "aws_acm_certificate" "domain" {
 }
 
 data "aws_route53_zone" "domain" {
-  name                          = "${local.domain}"
+  name                          = local.domain
   private_zone                  = false
 }
 
@@ -25,9 +25,7 @@ data "aws_iam_policy_document" "ecr_access" {
 
         principals {
             type                =  "Service"
-            identifiers         = [
-                "lambda.amazonaws.com"
-            ]
+            identifiers         = [ "lambda.amazonaws.com" ]
         }
 
         condition {
