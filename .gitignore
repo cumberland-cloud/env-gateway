@@ -4,3 +4,5 @@
 **/*.tfstate
 **/*venv*
 /docs/build/**
+**/*plan.*
+**/tfplan
